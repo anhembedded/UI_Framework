@@ -1,0 +1,217 @@
+@startuml
+title Class Diagram - Task-Oriented UI Framework (v2)
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam roundCorner 8
+
+package "framework/core" {
+    abstract class TaskContext {
+        + report_progress(value: int): void
+        + report_message(message: str): void
+        + log(message: str): void
+        + is_cancelled(): bool
+        + cancel(): void
+    }
+
+    abstract class Task {
+        + run(ctx: TaskContext): Any
+    }
+
+    class WithTimeout {
+        - _task: Task
+        - _timeout: float
+        + run(ctx: TaskContext): Any
+    }
+
+    enum TaskStatus {
+        PENDING | RUNNING
+        COMPLETED | FAILED | CANCELLED
+    }
+
+    class TaskState {
+        + id: str
+        + status: TaskStatus
+        + progress: int
+        + result: Any
+        + error: Optional[str]
+        - _lock: Lock
+        + snapshot(): TaskState
+        + set_status(s): void
+        + set_result(r): void
+        + set_error(e): void
+    }
+
+    abstract class TaskHandle {
+        + cancel(): void
+        + subscribe(cb): void
+        + subscribe_message(cb): void
+        + subscribe_finished(cb): void
+        + subscribe_error(cb): void
+        + get_state(): TaskState
+    }
+
+    abstract class TaskExecutor {
+        + submit(task: Task): TaskHandle
+    }
+
+    class TaskRepository {
+        + add(state): void
+        + update(state): void
+        + get(id): TaskState
+        + all(): Dict
+    }
+
+    class TaskRegistry {
+        + register(type, factory): void
+        + create(type, *args): Task
+    }
+
+    abstract class TaskFactory {
+        + create(): Task
+    }
+}
+
+package "framework/adapters (Qt)" {
+    class QtTaskContext implements TaskContext {
+        - signals: QtTaskSignals
+        - _cancelled: bool
+        + cancel(): void
+    }
+
+    class QtTaskSignals <<QObject>> {
+        Signal progress(int)
+        Signal message(str)
+        Signal error(str)
+        Signal finished(TaskStatus)
+    }
+
+    class QtTaskExecutor implements TaskExecutor {
+        - pool: QThreadPool
+        - repo: TaskRepository
+    }
+
+    class QtTaskHandle implements TaskHandle {
+        - _state: TaskState
+        - ctx: QtTaskContext
+        + get_state(): TaskState  "returns snapshot()"
+    }
+
+    class QtTaskRunner <<QRunnable>> {
+        - task: Task
+        - ctx: QtTaskContext
+        - state: TaskState
+        + run(): void
+    }
+}
+
+package "framework/adapters (CLI)" {
+    class CLITaskContext implements TaskContext {
+        - _cancelled: bool
+        + cancel(): void
+        + log(): void  "uses print()"
+    }
+
+    class CLITaskExecutor implements TaskExecutor {
+        + submit(task): CLITaskHandle
+    }
+
+    class CLITaskHandle implements TaskHandle {
+        + subscribe()  "raises UserWarning (P0 fix)"
+    }
+}
+
+package "framework/logging_setup" {
+    class LoggingSetup <<module>> {
+        + setup_logging(level, log_file)
+        + setup_exception_handler()
+    }
+}
+
+package "ui/" {
+    class BaseQtView <<QWidget>> {
+        - _presenter: BasePresenter
+        + _set_presenter(p): void
+        + closeEvent(e): void  "→ cleanup()"
+    }
+
+    class BasePresenter {
+        + executor: TaskExecutor
+        + view: Any
+        - _handles: List[TaskHandle]
+        - _logger: Logger
+        + bind(view): void
+        + cleanup(): void  "cancels ALL handles"
+        + _track(h): void
+        + _untrack(h): void
+        + is_alive: bool  "P0 guard property"
+    }
+
+    class PresenterFactory {
+        - _mapping: Dict
+        + register(view_cls, presenter_cls): void
+        + create(view, executor): BasePresenter
+    }
+}
+
+package "app/" {
+    abstract class BaseApp {
+        + run(): void
+    }
+
+    class AppFactory {
+        - _REGISTRY: Dict
+        + {static} from_args(argv): BaseApp
+    }
+
+    class QtDemoBasicApp extends BaseApp
+    class CLIDemoBasicApp extends BaseApp
+    class QtDemoMultiTaskApp extends BaseApp
+    class CLIDemoMultiTaskApp extends BaseApp
+    class QtDemoFileProcessorApp extends BaseApp
+    class CLIDemoFileProcessorApp extends BaseApp
+}
+
+package "apps/demo_basic" {
+    class DemoTask extends Task
+    class DemoView extends BaseQtView
+    class DemoPresenter extends BasePresenter
+}
+
+package "apps/demo_multi_task" {
+    class WorkTask extends Task
+    class MultiTaskView extends BaseQtView
+    class MultiTaskPresenter extends BasePresenter
+}
+
+package "apps/demo_file_processor" {
+    class FileScanTask extends Task
+    class FileProcessorView extends BaseQtView
+    class FileProcessorPresenter extends BasePresenter
+}
+
+' Core relations
+Task ..> TaskContext : uses
+WithTimeout o-- Task : wraps
+
+TaskExecutor <|.. QtTaskExecutor
+TaskExecutor <|.. CLITaskExecutor
+TaskHandle <|.. QtTaskHandle
+TaskHandle <|.. CLITaskHandle
+TaskContext <|.. QtTaskContext
+TaskContext <|.. CLITaskContext
+
+QtTaskExecutor ..> QtTaskRunner : creates
+QtTaskRunner *-- QtTaskContext
+QtTaskRunner *-- QtTaskSignals
+QtTaskHandle --> QtTaskContext : uses
+
+' UI relations
+BasePresenter ..> TaskExecutor : uses
+BaseQtView --> BasePresenter : calls cleanup()
+PresenterFactory ..> BasePresenter : creates
+
+AppFactory ..> BaseApp : creates
+AppFactory --> LoggingSetup : initialises
+
+@enduml

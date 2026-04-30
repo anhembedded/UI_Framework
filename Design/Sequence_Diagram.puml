@@ -1,0 +1,118 @@
+@startuml
+title Sequence Diagram - Complete Lifecycle v2
+
+actor User
+participant "main.py" as Main
+participant "AppFactory" as AF
+participant "LoggingSetup" as Log
+participant "BaseApp (e.g. QtDemoBasicApp)" as App
+participant "PresenterFactory" as PF
+participant "BaseQtView" as View
+participant "BasePresenter" as Pres
+participant "QtTaskExecutor" as Exec
+participant "QtTaskRunner\n(QRunnable)" as Runner
+participant "QtTaskContext" as Ctx
+participant "Task (Domain)" as Task
+participant "TaskRepository" as Repo
+
+== 1. Startup ==
+User -> Main: python main.py [--app=xxx] [--cli]
+Main -> AF: from_args(sys.argv)
+AF -> Log: setup_logging()
+AF -> Log: setup_exception_handler()
+AF -> App: <<create>> QtDemoBasicApp()
+AF --> Main: app
+Main -> App: run()
+
+== 2. Composition Root ==
+App -> Exec: <<create>> QtTaskExecutor(repo)
+App -> PF: <<create>> PresenterFactory()
+App -> PF: register(DemoView, DemoPresenter)
+
+== 3. Create & Wire View ==
+App -> View: <<create>> DemoView()
+App -> PF: create(view, executor)
+PF -> Pres: <<create>> DemoPresenter(executor)
+PF --> App: presenter
+App -> Pres: bind(view)
+Pres -> Pres: super().bind(view)
+note right: connects view.destroyed signal\nas safety-net cleanup
+Pres -> View: _set_presenter(self)
+App -> View: show()
+
+== 4. Start Task ==
+User -> View: click "Start"
+View -> Pres: on_start()
+Pres -> Task: <<create>> Task()
+note right: optionally wrapped\nwith WithTimeout(task, 30s)
+Pres -> Exec: submit(task)
+Exec -> Ctx: <<create>> QtTaskContext()
+Exec -> Runner: <<create>> QtTaskRunner(task, ctx, state)
+Exec -> Repo: add(state)
+Exec -> Runner: QThreadPool.start(runner)
+Exec --> Pres: QtTaskHandle
+Pres -> Pres: _track(handle)
+Pres -> View: set_running()
+
+== 5. Task Execution (Worker Thread) ==
+Runner -> Task: run(ctx)
+loop each step
+    Task -> Ctx: report_progress(value)
+    Ctx -> Pres: emit progress(value)\n[Queued → GUI thread]
+    Pres -> Pres: if not is_alive: return  [P0 guard]
+    Pres -> View: set_progress(value)
+
+    Task -> Ctx: report_message(msg)
+    Ctx -> Pres: emit message(msg)
+    Pres -> View: set_message(msg)
+
+    Task -> Ctx: is_cancelled()
+end
+Runner -> Repo: update(state)
+Runner -> Ctx: emit finished(COMPLETED)
+Ctx -> Pres: on_finished(COMPLETED, handle)
+Pres -> Pres: _untrack(handle)
+Pres -> View: set_finished(COMPLETED)
+
+== 6. Cancel Task ==
+User -> View: click "Cancel"
+View -> Pres: on_cancel()
+loop each handle in _handles
+    Pres -> Pres: handle.cancel()
+    Pres -> Ctx: cancel() → _cancelled = True
+end
+Task -> Ctx: is_cancelled() → True
+Task --> Runner: return early
+Runner -> Ctx: emit finished(CANCELLED)
+Ctx -> Pres: on_finished(CANCELLED, handle)
+Pres -> Pres: _untrack(handle)
+Pres -> View: set_finished(CANCELLED)
+
+== 7. Timeout (WithTimeout wrapper) ==
+note over Task, Ctx
+    WithTimeout starts threading.Timer
+    on expiry: ctx.cancel() is called automatically
+    Task sees is_cancelled() → True → returns early
+    Presenter receives finished(CANCELLED)
+end note
+
+== 8. App Teardown (Window Close) ==
+User -> View: Close [X]
+View -> View: closeEvent()
+View -> Pres: cleanup()
+loop each handle in _handles
+    Pres -> Pres: handle.cancel()
+end
+Pres -> Pres: _handles.clear()
+Pres -> Pres: self.view = None
+View -> View: self._presenter = None
+View -> View: super().closeEvent()
+View --> User: Window closed
+
+note over Runner, Ctx
+    If a queued signal fires AFTER cleanup():
+    Presenter.is_alive → False → callback returns immediately
+    No crash, no NoneType error [P0 fix]
+end note
+
+@enduml

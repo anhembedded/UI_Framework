@@ -1,0 +1,31 @@
+@startuml
+title Sequence Diagram - CLI Flow
+
+actor User
+participant "main.py" as CLI
+participant "CLITaskExecutor" as Exec
+participant "CLITaskHandle" as Handle
+participant "CLITaskContext" as Ctx
+participant "DownloadTask" as Dom
+
+User -> CLI: python app.py --task download --url ... --dest ...
+CLI -> CLI: factory.create() -> DownloadTask
+CLI -> Exec: submit(task)
+Exec -> Exec: tạo CLITaskContext
+Exec -> Handle: <<create>> CLITaskHandle
+Exec --> CLI: CLITaskHandle
+CLI -> Handle: subscribe(callback_in_ra_console)
+
+Exec -> Dom: run(ctx)
+loop mỗi bước
+    Dom -> Ctx: report_progress(i)
+    Ctx -> CLI: print(f"Progress: {i}%")
+    Dom -> Ctx: report_message(...)
+    Ctx -> CLI: print(...)
+    Dom -> Ctx: is_cancelled()
+end
+Dom --> Exec: return
+Exec -> Handle: update state
+Handle -> CLI: callback (final status)
+CLI -> CLI: print("Task finished: ...")
+@enduml

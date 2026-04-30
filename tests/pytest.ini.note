@@ -1,0 +1,2 @@
+"""pytest.ini configuration via pyproject.toml [tool.pytest] section."""
+# This file is intentionally empty — configuration is in pyproject.toml

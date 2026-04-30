@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / Packaging
+*.egg-info/
+*.egg
+dist/
+build/
+wheels/
+.eggs/
+MANIFEST
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Type checkers
+.mypy_cache/
+.pyright/
+.ruff_cache/
+.pyrefly/
+
+# Qt / PySide generated files
+*.qrc
+*.ui.bak
+
+# OS
+desktop.ini
