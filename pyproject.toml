@@ -12,7 +12,7 @@ dev = ["pytest>=8.0", "pytest-cov>=5.0"]
 where = ["."]
 
 [tool.pytest.ini_options]
-testpaths   = ["tests"]
+testpaths   = ["framework/tests"]
 addopts     = "-ra -q"
 markers     = [
     "qt: tests that require a running QApplication (deselect with -m 'not qt')",
@@ -20,8 +20,8 @@ markers     = [
 ]
 
 [tool.coverage.run]
-source = ["framework", "ui", "app"]
-omit   = ["*/__pycache__/*", "tests/*"]
+source = ["framework", "app"]
+omit   = ["*/__pycache__/*", "framework/tests/*"]
 
 [tool.coverage.report]
 show_missing = true

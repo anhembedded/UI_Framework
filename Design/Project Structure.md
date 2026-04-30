@@ -19,12 +19,12 @@ framework/
 
     logging_setup.py         ← setup_logging() + setup_exception_handler()
 
-ui/
-    views/
-        base_qt_view.py      ← BaseQtView (closeEvent lifecycle → cleanup)
-    presenters/
-        base_presenter.py    ← BasePresenter (is_alive, _handles list, cleanup, _track/_untrack)
-        presenter_factory.py ← PresenterFactory (executor injected at create(), not stored)
+        ui/
+        views/
+            base_qt_view.py      ← BaseQtView (closeEvent lifecycle → cleanup)
+        presenters/
+            base_presenter.py    ← BasePresenter (is_alive, _handles list, cleanup, _track/_untrack)
+            presenter_factory.py ← PresenterFactory (executor injected at create(), not stored)
 
 app/
     __init__.py
@@ -53,22 +53,22 @@ apps/
         presenters/task_sub_presenter.py
         presenters/mdi_main_presenter.py
 
-tests/
-    conftest.py              ← Shared fixtures + task stubs
-    framework/
-        core/
-            test_task_state.py      ← 11 tests: defaults, setters, snapshot, thread-safety
-            test_task_context.py    ← 4 tests: ABC enforcement, cancel() regression
-            test_task_repository.py ← 9 tests: CRUD, isolation
-            test_task_timeout.py    ← 3 tests: fast/slow/no-premature-cancel
-        runtime/
-            test_cli_executor.py    ← 12 tests: COMPLETED/FAILED/CANCELLED, subscribe()
-        adapters/
-            test_cli_context.py     ← 7 tests: progress, message, log→logging, cancel
-    ui/
+    tests/
+        conftest.py              ← Shared fixtures + task stubs
+        framework/
+            core/
+                test_task_state.py      ← 11 tests: defaults, setters, snapshot, thread-safety
+                test_task_context.py    ← 4 tests: ABC enforcement, cancel() regression
+                test_task_repository.py ← 9 tests: CRUD, isolation
+                test_task_timeout.py    ← 3 tests: fast/slow/no-premature-cancel
+            runtime/
+                test_cli_executor.py    ← 12 tests: COMPLETED/FAILED/CANCELLED, subscribe()
+            adapters/
+                test_cli_context.py     ← 7 tests: progress, message, log→logging, cancel
+        ui/
         test_base_presenter.py      ← 13 tests: is_alive, bind, tracking, idempotent cleanup
         test_presenter_factory.py   ← 6 tests: register, inject, overwrite, KeyError
-    bootstrap/
+        bootstrap/
         test_framework_context.py   ← 9 tests: CLI bootstrap, register chain, wire()
 
 main.py                      ← 3-line entry point

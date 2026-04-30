@@ -1,5 +1,5 @@
 from typing import Dict
-from ui.presenters.base_presenter import BasePresenter
+from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_multi_task.tasks.work_task import WorkTask
 from framework.core.task_state import TaskStatus
 

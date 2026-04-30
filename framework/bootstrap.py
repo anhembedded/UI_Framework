@@ -33,7 +33,7 @@ from __future__ import annotations
 from typing import Any, Tuple, Type, TYPE_CHECKING
 
 from framework.core.task_repository import TaskRepository
-from ui.presenters.presenter_factory import PresenterFactory
+from framework.ui.presenters.presenter_factory import PresenterFactory
 
 if TYPE_CHECKING:
     from framework.core.task_executor import TaskExecutor

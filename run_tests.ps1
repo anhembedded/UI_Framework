@@ -73,9 +73,9 @@ if (-not (Test-Path $PY)) {
 }
 
 # ── Build target path ────────────────────────────────────────────────────────
-$target = "tests"
+$target = "framework/tests"
 if ($Module -ne "") {
-    $target = "tests/$Module"
+    $target = "framework/tests/$Module"
 }
 
 # ── Build pytest args ────────────────────────────────────────────────────────
@@ -92,7 +92,7 @@ if ($Filter -ne "") {
 }
 
 if ($Coverage -or $Html) {
-    $pytestArgs += "--cov=framework", "--cov=ui", "--cov=app", "--cov-report=term-missing"
+    $pytestArgs += "--cov=framework", "--cov=app", "--cov-report=term-missing"
     if ($Html) {
         $pytestArgs += "--cov-report=html:htmlcov"
     }

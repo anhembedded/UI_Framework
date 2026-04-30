@@ -1,4 +1,4 @@
-from ui.presenters.base_presenter import BasePresenter
+from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_basic.tasks.demo_task import DemoTask
 from framework.core.task_state import TaskStatus
 

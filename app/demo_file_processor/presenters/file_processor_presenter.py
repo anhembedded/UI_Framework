@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QFileDialog
 
-from ui.presenters.base_presenter import BasePresenter
+from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_file_processor.tasks.file_scan_task import FileScanTask
 from framework.core.task_state import TaskStatus
 from framework.core.task_timeout import WithTimeout

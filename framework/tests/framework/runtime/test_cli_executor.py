@@ -14,7 +14,7 @@ import pytest
 from framework.runtime.cli_executor import CLITaskExecutor
 from framework.core.task_repository import TaskRepository
 from framework.core.task_state import TaskStatus
-from tests.conftest import SuccessTask, FailTask, CancelCheckTask
+from framework.tests.conftest import SuccessTask, FailTask, CancelCheckTask
 
 
 @pytest.fixture

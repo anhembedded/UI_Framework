@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 from framework.core.task_state import TaskStatus
-from ui.views.base_qt_view import BaseQtView
+from framework.ui.views.base_qt_view import BaseQtView
 
 
 class FileProcessorView(BaseQtView):

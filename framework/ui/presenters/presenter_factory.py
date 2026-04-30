@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Type
 
-from ui.presenters.base_presenter import BasePresenter
+from framework.ui.presenters.base_presenter import BasePresenter
 
 
 class PresenterFactory:

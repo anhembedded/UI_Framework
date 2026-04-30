@@ -1,6 +1,6 @@
 import logging
 
-from ui.presenters.base_presenter import BasePresenter
+from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_mdi.views.task_sub_view import TaskSubView
 from app.demo_mdi.presenters.task_sub_presenter import TaskSubPresenter
 

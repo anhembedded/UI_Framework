@@ -1,6 +1,6 @@
 import logging
 
-from ui.presenters.base_presenter import BasePresenter
+from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_mdi.tasks.long_task import LongTask
 from framework.core.task_state import TaskStatus
 
