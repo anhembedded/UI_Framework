@@ -1,12 +1,15 @@
 from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_basic.tasks.demo_task import DemoTask
 from framework.core.task_state import TaskStatus
+from app.demo_basic.views.demo_view import IDemoView
 
 
 class DemoPresenter(BasePresenter):
     """Presenter for DemoView — basic progress demo."""
 
-    def bind(self, view) -> None:
+    view: IDemoView
+
+    def bind(self, view: IDemoView) -> None:
         super().bind(view)
         if hasattr(view, "_set_presenter"):
             view._set_presenter(self)

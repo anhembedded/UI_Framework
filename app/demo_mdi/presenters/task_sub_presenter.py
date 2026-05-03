@@ -1,8 +1,10 @@
 import logging
+from typing import Protocol, Any
 
 from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_mdi.tasks.long_task import LongTask
 from framework.core.task_state import TaskStatus
+from app.demo_mdi.views.task_sub_view import ITaskSubView
 
 _logger = logging.getLogger(__name__)
 
@@ -14,11 +16,13 @@ class TaskSubPresenter(BasePresenter):
     can show evidence of the cleanup lifecycle.
     """
 
+    view: ITaskSubView
+
     def __init__(self, executor, task_name: str) -> None:
         super().__init__(executor)
         self.task_name = task_name
 
-    def bind(self, view) -> None:
+    def bind(self, view: ITaskSubView) -> None:
         super().bind(view)
         if hasattr(view, "_set_presenter"):
             view._set_presenter(self)

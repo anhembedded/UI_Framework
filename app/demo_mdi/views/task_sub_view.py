@@ -8,7 +8,16 @@ from framework.core.task_state import TaskStatus
 from framework.ui.views.base_qt_view import BaseQtView
 
 
-class TaskSubView(BaseQtView):
+class ITaskSubView(BaseQtView):
+    start_btn: QPushButton
+    cancel_btn: QPushButton
+    def set_running(self) -> None: ...
+    def set_message(self, text: str) -> None: ...
+    def set_progress(self, value: int) -> None: ...
+    def set_finished(self, status: TaskStatus) -> None: ...
+
+
+class TaskSubView(ITaskSubView):
     """Content widget for an MDI sub-window.
 
     Inherits BaseQtView so that when the parent QMdiSubWindow

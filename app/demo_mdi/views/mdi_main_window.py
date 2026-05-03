@@ -54,7 +54,14 @@ class QtLogHandler(logging.Handler):
 # Main Window
 # ---------------------------------------------------------------------------
 
-class MdiMainWindow(QMainWindow):
+class IMdiMainView(QMainWindow):
+    action_new: QAction
+    mdi_area: QMdiArea
+    def add_sub_window(self, widget: QWidget, title: str) -> QMdiSubWindow: ...
+    def update_status(self, text: str) -> None: ...
+
+
+class MdiMainWindow(IMdiMainView):
     """QMainWindow with QMdiArea and a live cleanup log dock.
 
     NOT a BaseQtView (it's a QMainWindow), but BasePresenter still hooks

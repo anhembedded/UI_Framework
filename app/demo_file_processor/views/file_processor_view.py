@@ -8,7 +8,23 @@ from framework.core.task_state import TaskStatus
 from framework.ui.views.base_qt_view import BaseQtView
 
 
-class FileProcessorView(BaseQtView):
+from typing import List, Dict, Any
+
+class IFileProcessorView(BaseQtView):
+    browse_btn: QPushButton
+    start_btn: QPushButton
+    cancel_btn: QPushButton
+    dir_input: QLineEdit
+    
+    def get_directory(self) -> str: ...
+    def set_status(self, text: str) -> None: ...
+    def set_running(self) -> None: ...
+    def set_progress(self, value: int) -> None: ...
+    def populate_results(self, results: List[Dict[str, Any]]) -> None: ...
+    def set_finished(self, status: TaskStatus) -> None: ...
+
+
+class FileProcessorView(IFileProcessorView):
     """View for the file-scan demo: directory picker, results table."""
 
     COLUMNS = ["File", "Rel. Path", "Lines", "Words", "Size (KB)"]

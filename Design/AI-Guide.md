@@ -528,6 +528,32 @@ handle = executor.submit(task)           # blocks until done
 state = handle.get_state()               # then read the result
 ```
 
+### ❌ NEVER use Concrete View classes in Presenter Type Hints
+
+To achieve MVP decoupling using traditional Nominal Subtyping, Presenters must NEVER import their concrete View class. Doing so creates tight coupling. Instead, define an Interface (Abstract Class) inheriting from `BaseQtView` inside the View layer, and have the Presenter use that Interface.
+
+```python
+# WRONG — tight coupling
+from app.demo.views.my_view import MyView
+
+class MyPresenter(BasePresenter):
+    def bind(self, view: MyView) -> None: ...
+```
+
+```python
+# CORRECT — decoupled using OOP Interfaces (Nominal Subtyping)
+# In my_view.py:
+# class IMyView(BaseQtView): ...
+# class MyView(IMyView): ...
+
+# In my_presenter.py:
+from app.demo.views.my_view import IMyView
+
+class MyPresenter(BasePresenter):
+    view: IMyView
+    def bind(self, view: IMyView) -> None: ...
+```
+
 ### ❌ NEVER store executor or presenter in the factory
 
 ```python

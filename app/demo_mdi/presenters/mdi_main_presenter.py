@@ -1,8 +1,10 @@
 import logging
+from typing import Protocol, Any
 
 from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_mdi.views.task_sub_view import TaskSubView
 from app.demo_mdi.presenters.task_sub_presenter import TaskSubPresenter
+from app.demo_mdi.views.mdi_main_window import IMdiMainView
 
 _logger = logging.getLogger(__name__)
 _counter = 0
@@ -18,7 +20,9 @@ class MdiMainPresenter(BasePresenter):
       is owned by its view via _set_presenter; cleanup is automatic.
     """
 
-    def bind(self, view) -> None:
+    view: IMdiMainView
+
+    def bind(self, view: IMdiMainView) -> None:
         super().bind(view)
         # MdiMainWindow is a QMainWindow, not a BaseQtView, but
         # BasePresenter.bind() still connects to view.destroyed as safety net.

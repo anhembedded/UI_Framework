@@ -1,7 +1,8 @@
-from typing import Dict
+from typing import Dict, Any
 from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_multi_task.tasks.work_task import WorkTask
 from framework.core.task_state import TaskStatus
+from app.demo_multi_task.views.multi_task_view import IMultiTaskView
 
 
 class MultiTaskPresenter(BasePresenter):
@@ -11,9 +12,10 @@ class MultiTaskPresenter(BasePresenter):
     each with its own card widget and progress bar.
     """
 
+    view: IMultiTaskView
     _task_counter: int = 0
 
-    def bind(self, view) -> None:
+    def bind(self, view: IMultiTaskView) -> None:
         super().bind(view)
         if hasattr(view, "_set_presenter"):
             view._set_presenter(self)

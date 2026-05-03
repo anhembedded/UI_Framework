@@ -4,7 +4,7 @@ from framework.ui.presenters.base_presenter import BasePresenter
 from app.demo_file_processor.tasks.file_scan_task import FileScanTask
 from framework.core.task_state import TaskStatus
 from framework.core.task_timeout import WithTimeout
-
+from app.demo_file_processor.views.file_processor_view import IFileProcessorView
 
 SCAN_TIMEOUT_SEC = 30.0
 
@@ -17,8 +17,10 @@ class FileProcessorPresenter(BasePresenter):
     - P0 is_alive guard on every callback
     - P1 multi-handle tracking
     """
+    
+    view: IFileProcessorView
 
-    def bind(self, view) -> None:
+    def bind(self, view: IFileProcessorView) -> None:
         super().bind(view)
         if hasattr(view, "_set_presenter"):
             view._set_presenter(self)

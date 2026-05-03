@@ -7,7 +7,19 @@ from framework.core.task_state import TaskStatus
 from framework.ui.views.base_qt_view import BaseQtView
 
 
-class DemoView(BaseQtView):
+class IDemoView(BaseQtView):
+    """Interface for DemoView."""
+    
+    start_button: QPushButton
+    cancel_button: QPushButton
+
+    def set_running(self) -> None: ...
+    def set_progress(self, value: int) -> None: ...
+    def set_message(self, text: str) -> None: ...
+    def set_finished(self, status: TaskStatus) -> None: ...
+
+
+class DemoView(IDemoView):
     """Basic demo view: Start, Cancel, progress bar, message label."""
 
     def __init__(self, parent: QWidget = None) -> None:

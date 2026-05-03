@@ -7,7 +7,14 @@ from framework.core.task_state import TaskStatus
 from framework.ui.views.base_qt_view import BaseQtView
 
 
-class TaskCard(QGroupBox):
+class ITaskCard(QGroupBox):
+    cancel_btn: QPushButton
+    def set_progress(self, value: int) -> None: ...
+    def set_message(self, text: str) -> None: ...
+    def set_finished(self, status: TaskStatus) -> None: ...
+
+
+class TaskCard(ITaskCard):
     """A small widget representing one running task."""
 
     def __init__(self, task_id: str, name: str, parent=None) -> None:
@@ -45,7 +52,16 @@ class TaskCard(QGroupBox):
         self.status_label.setText(icons.get(status, str(status)))
 
 
-class MultiTaskView(BaseQtView):
+class IMultiTaskView(BaseQtView):
+    add_btn: QPushButton
+    cancel_all_btn: QPushButton
+    clear_btn: QPushButton
+    def add_card(self, task_id: str, name: str) -> ITaskCard: ...
+    def remove_finished_cards(self) -> None: ...
+    def set_summary(self, text: str) -> None: ...
+
+
+class MultiTaskView(IMultiTaskView):
     """View that allows spawning multiple parallel tasks."""
 
     def __init__(self, parent: QWidget = None) -> None:
