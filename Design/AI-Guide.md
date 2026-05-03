@@ -70,7 +70,7 @@ UI_FrameworkDev/
 │   │   └── cli/cli_context.py   Routes calls to stdout
 │   └── logging_setup.py         setup_logging() + setup_exception_handler()
 │
-├── ui/                 ← Framework base classes for UI layer, DO NOT put app code here
+├── ramework/ui/                 ← Framework base classes for UI layer, DO NOT put app code here
 │   ├── views/
 │   │   └── base_qt_view.py      BaseQtView (QWidget with closeEvent lifecycle)
 │   └── presenters/
@@ -80,7 +80,7 @@ UI_FrameworkDev/
 ├── app/                ← Composition root (wiring) — edit when adding a new app
 │   └── app_factory.py           AppFactory + all App classes
 │
-├── apps/               ← YOUR APP CODE GOES HERE
+├── app/               ← YOUR APP CODE GOES HERE
 │   ├── demo_basic/
 │   ├── demo_multi_task/
 │   ├── demo_file_processor/
@@ -89,7 +89,7 @@ UI_FrameworkDev/
 └── main.py             ← DO NOT MODIFY (3 lines, calls AppFactory)
 ```
 
-**Rule:** Every new application goes in `apps/<your_app_name>/` with sub-directories:
+**Rule:** Every new application goes in `app/<your_app_name>/` with sub-directories:
 `tasks/`, `views/`, `presenters/`.
 
 ---
@@ -215,7 +215,7 @@ class MyView(BaseQtView):                    # NOT QWidget directly
 ### Step 1: Create directory structure
 
 ```
-apps/
+app/
 └── my_app/
     ├── __init__.py         (empty)
     ├── tasks/
@@ -232,7 +232,7 @@ apps/
 ### Step 2: Implement `MyTask` (no Qt, no UI)
 
 ```python
-# apps/my_app/tasks/my_task.py
+# app/my_app/tasks/my_task.py
 import time
 from framework.core.task import Task
 
@@ -250,7 +250,7 @@ class MyTask(Task):
 ### Step 3: Implement `MyView` (UI only, no task logic)
 
 ```python
-# apps/my_app/views/my_view.py
+# app/my_app/views/my_view.py
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QProgressBar, QLabel
 from PySide6.QtCore import Qt
 from framework.core.task_state import TaskStatus
@@ -291,7 +291,7 @@ class MyView(BaseQtView):
 ### Step 4: Implement `MyPresenter`
 
 ```python
-# apps/my_app/presenters/my_presenter.py
+# app/my_app/presenters/my_presenter.py
 from ui.presenters.base_presenter import BasePresenter
 from apps.my_app.tasks.my_task import MyTask
 from framework.core.task_state import TaskStatus
@@ -390,7 +390,7 @@ python main.py --app=myapp --cli    # CLI
 Below is a **hash-file task** — a real-world example that reads files and computes SHA-256 checksums:
 
 ```python
-# apps/hasher/tasks/hash_task.py
+# app/hasher/tasks/hash_task.py
 import hashlib
 import pathlib
 from framework.core.task import Task
@@ -679,10 +679,10 @@ sys.excepthook = qt_exception_hook
 
 ```
 IMPLEMENT NEW APP:
-  1. apps/my_app/{tasks,views,presenters}/__init__.py  (empty)
-  2. apps/my_app/tasks/my_task.py    → class MyTask(Task)
-  3. apps/my_app/views/my_view.py    → class MyView(BaseQtView)
-  4. apps/my_app/presenters/my_presenter.py → class MyPresenter(BasePresenter)
+  1. app/my_app/{tasks,views,presenters}/__init__.py  (empty)
+  2. app/my_app/tasks/my_task.py    → class MyTask(Task)
+  3. app/my_app/views/my_view.py    → class MyView(BaseQtView)
+  4. app/my_app/presenters/my_presenter.py → class MyPresenter(BasePresenter)
   5. app/app_factory.py              → add QtMyApp, CLIMyApp, register "myapp"
 
 MANDATORY PATTERNS:
