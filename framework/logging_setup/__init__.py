@@ -1,4 +1,10 @@
-"""Centralized logging and global exception handler — P1/P2 improvement.
+"""
+framework.logging_setup — Infrastructure Logging
+================================================
+Version : 1.0.0
+SDD     : Design/SDD/SDD_logging.md
+
+Centralized logging and global exception handler — P1/P2 improvement.
 
 Call ``setup_logging()`` and ``setup_exception_handler()`` once at startup
 (in AppFactory.run or BaseApp.run) before any other component is created.

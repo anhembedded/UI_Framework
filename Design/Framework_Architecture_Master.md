@@ -52,9 +52,6 @@ graph TD
     FW_RUNTIME -. implements .-> TaskExecutor
     FW_RUNTIME -. implements .-> TaskContext
     
-    style FW_CORE fill:#d4edda,stroke:#28a745,stroke-width:2px
-    style FW_UI fill:#cce5ff,stroke:#007bff,stroke-width:2px
-    style FW_RUNTIME fill:#fff3cd,stroke:#ffc107,stroke-width:2px
 ```
 
 ---
@@ -196,48 +193,36 @@ The following sequence diagram illustrates the lifecycle from launching the `mai
 sequenceDiagram
     autonumber
     actor User
-    participant CLI as main.py
-    participant AppFactory
-    participant App as Concrete BaseApp
-    participant Ctx as FrameworkContext
-    participant Factory as PresenterFactory
-    participant View as Concrete QtView
+    participant View
+    participant Presenter
+    participant Executor as QtTaskExecutor
+    participant Task as Domain Task (Worker Thread)
+    participant Ctx as QtTaskContext (Signals)
     
-    User->>CLI: python main.py --app=basic
-    CLI->>AppFactory: from_args(sys.argv)
+    User->>View: Click "Start"
+    View->>Presenter: on_start_clicked()
     
-    note over AppFactory: Parses args, sets up logging
-    AppFactory-->>CLI: Returns QtDemoBasicApp instance
+    Presenter->>Executor: submit(DomainTask)
+    Executor->>Ctx: Create Context
+    Executor->>Task: Run in QThreadPool
+    Executor-->>Presenter: TaskHandle
     
-    CLI->>App: run()
-    activate App
+    Presenter->>Presenter: _track(handle)
+    Presenter->>TaskHandle: subscribe_progress(update_ui)
     
-    %% Phase 1: Bootstrap
-    App->>Ctx: FrameworkContext.qt()
-    activate Ctx
-    Ctx-->>Ctx: Create QtTaskExecutor, TaskRepository
-    Ctx-->>Ctx: Create PresenterFactory
-    Ctx-->>App: Return initialized ctx instance
-    deactivate Ctx
+    note over Task, Ctx: Worker Thread
+    loop Every step
+        Task->>Ctx: report_progress()
+        Ctx-->>View: Emit Signal (Queued)
+        View->>Presenter: Callback (update_ui)
+        Presenter->>Presenter: Check if is_alive
+        Presenter->>View: view.set_progress()
+    end
     
-    %% Phase 2: Registration
-    App->>Ctx: register(DemoView, DemoPresenter)
-    Ctx->>Factory: Store mapping in _mapping dict
-    
-    %% Phase 3: Wiring
-    App->>View: Instantiate DemoView()
-    App->>Ctx: wire(view_instance)
-    activate Ctx
-    Ctx->>Factory: create(view_instance, executor)
-    Factory-->>Ctx: Returns DemoPresenter instance
-    Ctx->>Ctx: presenter.bind(view_instance)
-    Ctx-->>App: Returns (view_instance, presenter)
-    deactivate Ctx
-    
-    %% Phase 4: Launch
-    App->>View: show()
-    App->>CLI: sys.exit(app.exec())
-    deactivate App
+    Task-->>Executor: Return Result
+    Executor-->>Presenter: Emit Finished Signal
+    Presenter->>Presenter: _untrack(handle)
+    Presenter->>View: Show Result
 ```
 
 ---

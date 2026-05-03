@@ -1,7 +1,9 @@
 # SDD — Module `framework.bootstrap`
 
 **Module:** `framework/bootstrap.py`
+
 **Type:** Composition Root / DI Container
+
 **Dependencies:** `framework.core`, `framework.runtime`, `framework.ui`
 
 ---

@@ -215,7 +215,7 @@ class MyView(BaseQtView):                    # NOT QWidget directly
 
 ### Step 1: Create directory structure
 
-```
+```text
 app/
 └── my_app/
     ├── __init__.py         (empty)

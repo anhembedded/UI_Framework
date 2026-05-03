@@ -1,31 +1,20 @@
-"""FrameworkContext — Single Point of Wiring.
+"""
+framework.bootstrap — Composition Root / DI Container
+=====================================================
+Version : 1.0.0
+SDD     : Design/SDD/SDD_bootstrap.md
 
-This is the lightweight DI Container for the framework.
+This module provides FrameworkContext, the lightweight DI Container
+that acts as the Single Point of Wiring.
+
 It creates and owns ALL shared services in one place:
-    - TaskRepository
-    - TaskExecutor (Qt or CLI)
-    - PresenterFactory
+  - TaskRepository
+  - TaskExecutor (Qt or CLI)
+  - PresenterFactory
 
 The App layer (AppFactory) NEVER creates these services manually.
 It only calls FrameworkContext.qt() or FrameworkContext.cli() once,
 then uses the fluent API to register and wire.
-
-Clean Architecture usage pattern::
-
-    # 1. Bootstrap — one call, all services ready
-    ctx = FrameworkContext.qt()
-
-    # 2. Register view-presenter pairs (app-specific knowledge)
-    ctx.register(MyView, MyPresenter)
-
-    # 3. Wire — create view + presenter fully bound in one call
-    view, _ = ctx.wire(MyView())
-    view.show()
-
-Adding a new runtime (e.g. WebSocket, gRPC):
-    - Add a classmethod like ``FrameworkContext.ws()``
-    - Create the appropriate TaskExecutor inside it
-    - The App layer is unchanged
 """
 
 from __future__ import annotations
