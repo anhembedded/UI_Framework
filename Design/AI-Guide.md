@@ -118,6 +118,7 @@ class MyTask(Task):
 ```
 
 **Key rules for Task:**
+
 - NEVER import PySide6, tkinter, or any UI library
 - NEVER call `time.sleep()` without checking `ctx.is_cancelled()` nearby
 - Return a value (or `None`) — never raise to communicate "done"
@@ -126,7 +127,7 @@ class MyTask(Task):
 ### 3.2 `TaskContext` (how the Task communicates back)
 
 | Method | Purpose | Goes to |
-|---|---|---|
+| --- | --- | --- |
 | `report_progress(int 0-100)` | Progress percentage | Qt: progress signal → progress bar |
 | `report_message(str)` | Status text for user | Qt: message signal → label |
 | `log(str)` | Developer diagnostic | Python `logging` module (NOT shown in UI by default) |
@@ -548,6 +549,7 @@ presenter = factory.create(view, executor)  # executor injected here
 When implementing a new app, verify all of these:
 
 **Task:**
+
 - [ ] Does NOT import PySide6 or any UI library
 - [ ] Calls `ctx.is_cancelled()` at least once per loop iteration
 - [ ] Returns a value (not raises) on normal completion
@@ -555,11 +557,13 @@ When implementing a new app, verify all of these:
 - [ ] Uses `ctx.report_message()` for user-facing status updates
 
 **View:**
+
 - [ ] Inherits from `BaseQtView` (not `QWidget` directly)
 - [ ] Has ONLY `set_xxx()` methods — no business logic
 - [ ] Widget names match what the presenter expects (e.g. `self.start_btn`)
 
 **Presenter:**
+
 - [ ] First line of `bind()` is `super().bind(view)`
 - [ ] Second line calls `view._set_presenter(self)` if view supports it
 - [ ] Every `handle` returned from `submit()` is immediately `_track()`-ed
@@ -568,6 +572,7 @@ When implementing a new app, verify all of these:
 - [ ] Cancelled tasks → `_untrack` them properly
 
 **AppFactory entry:**
+
 - [ ] Imports are inside `run()` (lazy imports prevent loading Qt in CLI mode)
 - [ ] Calls `self._make_repo()` and `self._make_executor(repo)` for consistency
 - [ ] Registered in `_REGISTRY` dict
@@ -603,6 +608,7 @@ User closes window
 ```
 
 This chain **only works** if:
+
 1. View inherits `BaseQtView` (not raw `QWidget`)
 2. `view._set_presenter(self)` was called in `bind()`
 3. `super().bind(view)` was called (connects `view.destroyed` as backup)
@@ -616,12 +622,14 @@ sub.setWidget(my_view)                  # my_view must be BaseQtView
 ```
 
 With `WA_DeleteOnClose`:
+
 - Close sub-window → `QMdiSubWindow` deleted → its child (`my_view`) deleted
 - → `my_view.destroyed` signal fires → `presenter._on_view_destroyed()` → `cleanup()`
 
 ### Double cleanup is safe
 
 `BasePresenter.cleanup()` is idempotent:
+
 - Second call on an already-cleaned presenter: `_handles` is empty, `self.view` is already `None`
 - No crash, no leak
 

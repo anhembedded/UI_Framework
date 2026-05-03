@@ -1,4 +1,5 @@
 # Task-Oriented UI Framework
+
 ## Architecture Thesis Defense Document
 
 **Project:** Task-Oriented UI Framework (PySide6 + CLI)
@@ -55,6 +56,7 @@ The framework's entire design is driven by the following five User Stories (US).
 > *"As a Developer, I want to write my application's business logic as pure Python — with no dependency on Qt, PySide6, or any UI library — so that I can run, test, and reuse it in isolation without launching a graphical application."*
 
 **Acceptance Criteria:**
+
 - A `Task` class must be importable and instantiable in a plain Python environment (e.g., a `pytest` session) with no Qt installed.
 - All methods of `Task` must be callable from a Unit Test using only standard Python objects.
 - The task must be able to report progress and status without knowing whether it runs in a Qt or CLI environment.
@@ -68,6 +70,7 @@ The framework's entire design is driven by the following five User Stories (US).
 > *"As a Developer, I want to take the exact same Task class I wrote for the Qt GUI and run it from the Command Line Interface (CLI) without modifying a single line of the task's code."*
 
 **Acceptance Criteria:**
+
 - The same `MyTask` class runs successfully when submitted to both `QtTaskExecutor` and `CLITaskExecutor`.
 - The CLI output (progress, messages) is printed to stdout.
 - The Qt GUI output is rendered in the progress bar and status label.
@@ -82,6 +85,7 @@ The framework's entire design is driven by the following five User Stories (US).
 > *"As an End User, when I click 'Start' to begin a long operation (e.g., scanning 10,000 files), I want the UI to remain fully interactive — I can still move the window, click 'Cancel', and see live progress updates — while the operation runs in the background."*
 
 **Acceptance Criteria:**
+
 - The UI event loop is never blocked by the task's `run()` method.
 - Progress bar and status label update smoothly during task execution.
 - The Cancel button remains clickable and responsive at all times.
@@ -96,6 +100,7 @@ The framework's entire design is driven by the following five User Stories (US).
 > *"As an End User, I want to be able to close the application window at any time — even when a background task is running — and have the application shut down gracefully without freezing, crashing, or leaving orphaned processes."*
 
 **Acceptance Criteria:**
+
 - Pressing the `[X]` button on the window triggers immediate, clean shutdown.
 - All background threads associated with that window are cancelled within a finite timeout.
 - No `RuntimeError: Internal C++ object deleted` or `NoneType` crashes occur.
@@ -111,6 +116,7 @@ The framework's entire design is driven by the following five User Stories (US).
 > *"As a Developer (or QA Engineer), I want to write Unit Tests for the Presenter's decision-making logic (e.g., 'when the task finishes, does the presenter correctly update the view?') without needing to launch a QApplication, open any window, or depend on any Qt machinery."*
 
 **Acceptance Criteria:**
+
 - A `Presenter` can be instantiated in a `pytest` test function.
 - A `MagicMock` object can be used as the `view` argument.
 - A lightweight stub can be used as the `executor` argument.
@@ -137,6 +143,7 @@ class MyWindow(QMainWindow):
 ```
 
 **Failures against User Stories:**
+
 - **US-01 FAIL:** Business logic is inseparable from QMainWindow.
 - **US-02 FAIL:** Impossible to run from CLI.
 - **US-03 FAIL:** UI freezes completely for the duration of the task.
@@ -162,6 +169,7 @@ class MyWindow(QMainWindow):
 ```
 
 **Analysis:**
+
 - **US-03 PARTIAL PASS:** The UI thread is no longer blocked.
 - **US-01 FAIL:** Logic still depends on a widget reference.
 - **US-02 FAIL:** Thread dispatching is tightly coupled to the Qt widget.
@@ -197,6 +205,7 @@ class MyWindow(QMainWindow):
 ```
 
 **Analysis:**
+
 - **US-03 PASS:** UI thread is free. Signals are dispatched correctly via Qt's Queued Connections.
 - **US-01 FAIL:** Domain logic (`Worker`) is still coupled to `QObject` and requires Qt.
 - **US-02 FAIL:** Cannot use `Worker` in a plain CLI context.
@@ -364,6 +373,7 @@ User clicks [X]
 ```
 
 This chain is **only guaranteed** if all three conditions are met:
+
 1. `View` inherits `BaseQtView` (not raw `QWidget`).
 2. `view._set_presenter(self)` is called in `Presenter.bind()`.
 3. `super().bind(view)` is the first line of `Presenter.bind()`.
