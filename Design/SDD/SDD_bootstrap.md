@@ -109,8 +109,8 @@ sequenceDiagram
 ```mermaid
 flowchart LR
     A([FrameworkContext]) --> B{Which runtime?}
-    B -->|.qt()| C[QtTaskExecutor + QThreadPool]
-    B -->|.cli()| D[CLITaskExecutor + synchronous]
+    B -->|".qt()"| C["QtTaskExecutor + QThreadPool"]
+    B -->|".cli()"| D["CLITaskExecutor + synchronous"]
     C --> E[FrameworkContext instance]
     D --> E
 ```
