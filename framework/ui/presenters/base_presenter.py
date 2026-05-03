@@ -9,9 +9,11 @@ Thread-safety and lifecycle rules:
 """
 
 from __future__ import annotations
-
 import logging
 from typing import Any, List, Optional
+from framework.core.task_executor import TaskExecutor, TaskHandle
+from framework.ui.views.base_qt_view import BaseQtView
+
 
 
 class BasePresenter:
@@ -23,23 +25,23 @@ class BasePresenter:
         _handles: List of active TaskHandle objects for lifecycle management.
     """
 
-    def __init__(self, executor) -> None:
-        self.executor = executor
+    def __init__(self, executor : TaskExecutor) -> None:
+        self.executor: TaskExecutor = executor
         self.view: Optional[Any] = None
-        self._handles: List[Any] = []
+        self._handles: List[TaskHandle] = []
         self._logger = logging.getLogger(type(self).__name__)
 
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
 
-    def bind(self, view) -> None:
+    def bind(self, view : BaseQtView) -> None:
         """Bind this presenter to a view.
 
         Connects to ``view.destroyed`` signal if available (Qt safety net).
         Subclasses MUST call ``super().bind(view)`` first.
         """
-        self.view = view
+        self.view : BaseQtView = view
         try:
             view.destroyed.connect(self._on_view_destroyed)
         except AttributeError:
@@ -68,11 +70,11 @@ class BasePresenter:
     # Handle tracking helpers
     # ------------------------------------------------------------------
 
-    def _track(self, handle) -> None:
+    def _track(self, handle : TaskHandle) -> None:
         """Register a TaskHandle for lifecycle management."""
         self._handles.append(handle)
 
-    def _untrack(self, handle) -> None:
+    def _untrack(self, handle : TaskHandle) -> None:
         """Remove a TaskHandle when it completes (before checking is_alive)."""
         try:
             self._handles.remove(handle)

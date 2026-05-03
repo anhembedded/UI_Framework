@@ -9,6 +9,7 @@ Usage::
     handle = executor.submit(task)
 """
 
+from framework.core.task_context import TaskContext
 import threading
 from framework.core.task import AbstractTask
 
@@ -25,7 +26,7 @@ class WithTimeout(AbstractTask):
         self._task = task
         self._timeout = timeout_sec
 
-    def run(self, ctx):
+    def run(self, ctx : TaskContext):
         timer = threading.Timer(self._timeout, ctx.cancel)
         try:
             timer.start()

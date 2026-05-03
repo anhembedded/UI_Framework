@@ -1,3 +1,5 @@
+from framework.core.task_repository import TaskRepository
+from framework.core.task import AbstractTask
 import logging
 import warnings
 import uuid
@@ -35,12 +37,12 @@ class CLITaskHandle(TaskHandle):
 class CLITaskExecutor(TaskExecutor):
     """TaskExecutor that runs tasks synchronously in the calling thread."""
 
-    def __init__(self, repo=None) -> None:
+    def __init__(self, repo: TaskRepository = None) -> None:
         self._repo = repo
 
-    def submit(self, task) -> CLITaskHandle:
-        ctx = CLITaskContext()
-        state = TaskState(id=str(uuid.uuid4()), status=TaskStatus.RUNNING)
+    def submit(self, task: AbstractTask) -> CLITaskHandle:
+        ctx: CLITaskContext = CLITaskContext()
+        state: TaskState = TaskState(id=str(uuid.uuid4()), status=TaskStatus.RUNNING)
 
         if self._repo:
             self._repo.add(state)

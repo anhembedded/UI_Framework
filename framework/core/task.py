@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any
+from framework.core.task_context import TaskContext
 
 
 class AbstractTask(ABC):
@@ -9,7 +10,7 @@ class AbstractTask(ABC):
     """
 
     @abstractmethod
-    def run(self, ctx) -> Any:
+    def run(self, ctx : TaskContext) -> Any:
         """Execute the task logic.
         
         Args:

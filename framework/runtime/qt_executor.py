@@ -7,6 +7,7 @@ from framework.core.task_executor import TaskExecutor, TaskHandle
 from framework.core.task_state import TaskState, TaskStatus
 from framework.adapters.qt.qt_context import QtTaskContext
 from framework.core.task import AbstractTask
+from framework.core.task_repository import TaskRepository
 
 
 class QtTaskHandle(TaskHandle):
@@ -42,16 +43,16 @@ class QtTaskRunner(QRunnable):
 
     def __init__(
         self,
-        task,
+        task: AbstractTask,
         ctx: QtTaskContext,
         state: TaskState,
-        repo=None,
+        repo: TaskRepository = None,
     ) -> None:
         super().__init__()
-        self.task = task
-        self.ctx = ctx
-        self.state = state
-        self._repo = repo
+        self.task: AbstractTask = task
+        self.ctx: QtTaskContext = ctx
+        self.state: TaskState = state
+        self._repo: TaskRepository = repo
 
     def run(self) -> None:
         try:
@@ -83,13 +84,13 @@ class QtTaskRunner(QRunnable):
 class QtTaskExecutor(TaskExecutor):
     """TaskExecutor backed by Qt's QThreadPool."""
 
-    def __init__(self, repo=None) -> None:
+    def __init__(self, repo: TaskRepository = None) -> None:
         self.pool = QThreadPool.globalInstance()
         self._repo = repo
 
     def submit(self, task: AbstractTask) -> QtTaskHandle:
-        ctx = QtTaskContext()
-        state = TaskState(id=str(uuid.uuid4()), status=TaskStatus.PENDING)
+        ctx: QtTaskContext = QtTaskContext()
+        state: TaskState = TaskState(id=str(uuid.uuid4()), status=TaskStatus.PENDING)
 
         if self._repo:
             self._repo.add(state)

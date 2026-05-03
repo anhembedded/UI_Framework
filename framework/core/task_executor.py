@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable
 
 
-class TaskHandle:
+class TaskHandle(ABC):
     """Unified interface for controlling and observing a submitted task.
 
     Works identically for both Qt and CLI runtimes.
