@@ -61,7 +61,8 @@ class FrameworkContext:
         """
         from framework.runtime.qt_executor import QtTaskExecutor
         repo = TaskRepository()
-        return cls(executor=QtTaskExecutor(repo=repo), repo=repo)
+        executor = QtTaskExecutor(repo=repo)
+        return cls(executor=executor, repo=repo)
 
     @classmethod
     def cli(cls) -> "FrameworkContext":
@@ -71,7 +72,8 @@ class FrameworkContext:
         """
         from framework.runtime.cli_executor import CLITaskExecutor
         repo = TaskRepository()
-        return cls(executor=CLITaskExecutor(repo=repo), repo=repo)
+        executor = CLITaskExecutor(repo=repo)
+        return cls(executor=executor, repo=repo)
 
     # ------------------------------------------------------------------
     # Fluent registration API
