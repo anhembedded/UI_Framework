@@ -7,8 +7,6 @@ from app.demo_basic.views.demo_view import IDemoView
 class DemoPresenter(BasePresenter):
     """Presenter for DemoView — basic progress demo."""
 
-    view: IDemoView
-
     def bind(self, view: IDemoView) -> None:
         super().bind(view)
         if hasattr(view, "_set_presenter"):

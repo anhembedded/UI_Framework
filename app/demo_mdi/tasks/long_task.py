@@ -1,8 +1,8 @@
 import time
-from framework.core.task import Task
+from framework.core.task import AbstractTask
 
 
-class LongTask(Task):
+class LongTask(AbstractTask):
     """A deliberately long-running task designed to test the cleanup mechanism.
 
     Runs for `duration` seconds (1 step / second).

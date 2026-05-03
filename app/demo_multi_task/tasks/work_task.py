@@ -1,8 +1,8 @@
 import time
-from framework.core.task import Task
+from framework.core.task import AbstractTask
 
 
-class WorkTask(Task):
+class WorkTask(AbstractTask):
     """Simulated multi-step work task. Used to demo parallel execution."""
 
     def __init__(self, name: str, steps: int = 6, step_delay: float = 0.7) -> None:

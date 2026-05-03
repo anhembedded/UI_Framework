@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
-class Task(ABC):
+class AbstractTask(ABC):
     """Base class for all domain tasks.
     
     Tasks are pure domain logic — no dependency on Qt or any UI framework.

@@ -11,7 +11,7 @@
 import time
 import pytest
 from framework.core.task_timeout import WithTimeout
-from framework.core.task import Task
+from framework.core.task import AbstractTask
 from framework.adapters.cli.cli_context import CLITaskContext
 
 
@@ -19,13 +19,13 @@ from framework.adapters.cli.cli_context import CLITaskContext
 # Helpers
 # ---------------------------------------------------------------------------
 
-class _FastTask(Task):
+class _FastTask(AbstractTask):
     """Completes in ~0 ms — should NOT be cancelled by timeout."""
     def run(self, ctx):
         return "fast_result"
 
 
-class _SlowTask(Task):
+class _SlowTask(AbstractTask):
     """Sleeps 5 s — will be cancelled by a short timeout."""
     def run(self, ctx):
         for _ in range(50):

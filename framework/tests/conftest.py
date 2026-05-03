@@ -11,7 +11,7 @@ Design decisions:
 import pytest
 from unittest.mock import MagicMock
 
-from framework.core.task import Task
+from framework.core.task import AbstractTask
 from framework.core.task_state import TaskState, TaskStatus
 
 
@@ -19,7 +19,7 @@ from framework.core.task_state import TaskState, TaskStatus
 # Task stubs
 # ---------------------------------------------------------------------------
 
-class SuccessTask(Task):
+class SuccessTask(AbstractTask):
     """Completes immediately with return value 'ok'."""
     def run(self, ctx):
         ctx.report_progress(100)
@@ -28,7 +28,7 @@ class SuccessTask(Task):
         return "ok"
 
 
-class CancelCheckTask(Task):
+class CancelCheckTask(AbstractTask):
     """Checks cancellation each step. Returns None if cancelled."""
     def __init__(self, steps: int = 5) -> None:
         self.steps = steps
@@ -41,13 +41,13 @@ class CancelCheckTask(Task):
         return "finished"
 
 
-class FailTask(Task):
+class FailTask(AbstractTask):
     """Raises ValueError immediately."""
     def run(self, ctx):
         raise ValueError("intentional_error")
 
 
-class SlowTask(Task):
+class SlowTask(AbstractTask):
     """Sleeps per step — only used in timeout integration tests."""
     def __init__(self, sleep_sec: float = 2.0) -> None:
         self.sleep_sec = sleep_sec
@@ -63,17 +63,17 @@ class SlowTask(Task):
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def success_task() -> Task:
+def success_task() -> AbstractTask:
     return SuccessTask()
 
 
 @pytest.fixture
-def cancel_task() -> Task:
+def cancel_task() -> AbstractTask:
     return CancelCheckTask(steps=5)
 
 
 @pytest.fixture
-def fail_task() -> Task:
+def fail_task() -> AbstractTask:
     return FailTask()
 
 

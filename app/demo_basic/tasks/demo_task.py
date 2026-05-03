@@ -1,8 +1,8 @@
 import time
-from framework.core.task import Task
+from framework.core.task import AbstractTask
 
 
-class DemoTask(Task):
+class DemoTask(AbstractTask):
     """Basic demo task: counts 5 steps, reports progress each second."""
 
     def run(self, ctx):

@@ -80,8 +80,8 @@ class TestCLITaskExecutorCancellation:
         Pre-setting cancel before submit is the observable equivalent.
         We achieve this via a task that always reports cancelled.
         """
-        from framework.core.task import Task
-        class AlwaysCancelTask(Task):
+        from framework.core.task import AbstractTask
+        class AlwaysCancelTask(AbstractTask):
             def run(self, ctx):
                 ctx.cancel()          # cancels itself
                 if ctx.is_cancelled():

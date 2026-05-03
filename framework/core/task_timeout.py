@@ -10,10 +10,10 @@ Usage::
 """
 
 import threading
-from framework.core.task import Task
+from framework.core.task import AbstractTask
 
 
-class WithTimeout(Task):
+class WithTimeout(AbstractTask):
     """Decorator-style Task wrapper that enforces a maximum run time.
 
     When the timeout expires, ``ctx.cancel()`` is called automatically.
@@ -21,7 +21,7 @@ class WithTimeout(Task):
     regularly and returning early.
     """
 
-    def __init__(self, task: Task, timeout_sec: float) -> None:
+    def __init__(self, task: AbstractTask, timeout_sec: float) -> None:
         self._task = task
         self._timeout = timeout_sec
 

@@ -6,6 +6,7 @@ from PySide6.QtCore import QRunnable, QThreadPool
 from framework.core.task_executor import TaskExecutor, TaskHandle
 from framework.core.task_state import TaskState, TaskStatus
 from framework.adapters.qt.qt_context import QtTaskContext
+from framework.core.task import AbstractTask
 
 
 class QtTaskHandle(TaskHandle):
@@ -86,7 +87,7 @@ class QtTaskExecutor(TaskExecutor):
         self.pool = QThreadPool.globalInstance()
         self._repo = repo
 
-    def submit(self, task) -> QtTaskHandle:
+    def submit(self, task: AbstractTask) -> QtTaskHandle:
         ctx = QtTaskContext()
         state = TaskState(id=str(uuid.uuid4()), status=TaskStatus.PENDING)
 

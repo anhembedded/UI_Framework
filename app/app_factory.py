@@ -26,6 +26,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple, Type
 
 
+
 # ---------------------------------------------------------------------------
 # Base
 # ---------------------------------------------------------------------------
@@ -158,6 +159,26 @@ class QtDemoMdiApp(BaseApp):
         window.show()
         sys.exit(app.exec())
 
+class QT_New_App(BaseApp):
+    def run(self) -> None:
+        from PySide6.QtWidgets import QApplication
+        from framework.bootstrap import FrameworkContext
+        from app.new_demo_app.views.View_MainWindow import View_MainWindow
+        from app.new_demo_app.presenters.Presenter_MainWindow import Presenter_MainWindow
+
+        app = QApplication(sys.argv)
+        frameworkContext = FrameworkContext.qt()
+        
+        window = View_MainWindow()
+        presenter = Presenter_MainWindow(frameworkContext.executor)
+        presenter.bind(window)
+        window.show()
+        sys.exit(app.exec())
+
+class CLI_New_App(BaseApp):
+    def run(self) -> None:
+        print("new_demo demo is CLI-only.  Run: python main.py --app=new_demo")
+
 
 class CLIDemoMdiApp(BaseApp):
     def run(self) -> None:
@@ -183,6 +204,7 @@ class AppFactory:
         "multi": (QtDemoMultiTaskApp,     CLIDemoMultiTaskApp),
         "files": (QtDemoFileProcessorApp, CLIDemoFileProcessorApp),
         "mdi":   (QtDemoMdiApp,           CLIDemoMdiApp),
+        "new_demo":  (QT_New_App, CLI_New_App)
     }
 
     @classmethod

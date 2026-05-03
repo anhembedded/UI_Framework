@@ -1,9 +1,9 @@
 import pathlib
 from typing import List, Dict, Any
-from framework.core.task import Task
+from framework.core.task import AbstractTask
 
 
-class FileScanTask(Task):
+class FileScanTask(AbstractTask):
     """Scans a directory for text files and counts words/lines in each.
 
     Works well with WithTimeout() for large directories.
