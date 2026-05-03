@@ -63,7 +63,7 @@ classDiagram
     class CLITaskHandle {
         -TaskState _state
         +cancel()
-        +subscribe(callback) [UserWarning]
+        +subscribe(callback) <<UserWarning>>
         +get_state() TaskState
     }
 
@@ -90,7 +90,7 @@ sequenceDiagram
     participant Repo as TaskRepository
     participant Runner as QtTaskRunner (QRunnable)
     participant Pool as QThreadPool
-    participant Task as Task.run() [Worker Thread]
+    participant Task as Task.run() (Worker Thread)
     participant Ctx as QtTaskContext
 
     Presenter->>Executor: submit(task)
@@ -103,22 +103,22 @@ sequenceDiagram
 
     note over Pool,Task: QThreadPool picks a free worker thread
     Pool->>Runner: run()
-    Runner->>Repo: state.set_status(RUNNING); repo.update()
+    Runner->>Repo: state.set_status(RUNNING), repo.update()
     Runner->>Task: task.run(ctx)
 
     alt Task completes normally
         Task-->>Runner: return result
-        Runner->>Repo: state.set_result(result); set_status(COMPLETED)
+        Runner->>Repo: state.set_result(result), set_status(COMPLETED)
         Runner->>Ctx: signals.finished.emit(COMPLETED)
     else Task raises Exception
-        Runner->>Repo: state.set_error(exc); set_status(FAILED)
+        Runner->>Repo: state.set_error(exc), set_status(FAILED)
         Runner->>Ctx: signals.error.emit(str(exc))
         Runner->>Ctx: signals.finished.emit(FAILED)
     else Task cancelled
         Runner->>Repo: state.set_status(CANCELLED)
         Runner->>Ctx: signals.finished.emit(CANCELLED)
     end
-    Runner->>Repo: repo.update(state) [finally block]
+    Runner->>Repo: repo.update(state) (finally block)
 ```
 
 ### 3.2 `QtTaskRunner` Internal Logic
@@ -180,14 +180,14 @@ sequenceDiagram
 
     alt Success
         Task-->>Executor: return result
-        Executor->>Repo: state.set_result(result); set_status(COMPLETED)
+        Executor->>Repo: state.set_result(result), set_status(COMPLETED)
     else Cancelled
         Executor->>Repo: state.set_status(CANCELLED)
     else Exception
-        Executor->>Repo: state.set_error(exc); set_status(FAILED)
+        Executor->>Repo: state.set_error(exc), set_status(FAILED)
     end
 
-    Executor->>Repo: repo.update(state) [finally]
+    Executor->>Repo: repo.update(state) (finally)
     Executor-->>Caller: return CLITaskHandle(state)
 ```
 

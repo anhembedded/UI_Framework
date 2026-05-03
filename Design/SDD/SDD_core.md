@@ -56,7 +56,7 @@ classDiagram
         +TaskStatus status
         +int progress
         +Any result
-        +Optional[str] error
+        +Optional~str~ error
         -Lock _lock
         +snapshot() TaskState
         +set_status(TaskStatus)
@@ -209,7 +209,7 @@ sequenceDiagram
 
     Executor->>Repo: add(state) on submit
     Executor->>Repo: update(state) on status change
-    Presenter->>Repo: get(task_id) [optional query]
+    Presenter->>Repo: get(task_id) (optional query)
 ```
 
 **Note:** In the current architecture, Presenters receive state updates via `TaskHandle` subscriptions (Signals). Direct `TaskRepository` queries are optional and intended for future features (e.g., task dashboards, audit logs).
@@ -265,7 +265,7 @@ sequenceDiagram
         InnerTask-->>WithTimeout: return result
     end
 
-    WithTimeout->>Timer: cancel() [always]
+    WithTimeout->>Timer: cancel() (always)
     WithTimeout-->>Executor: return result
 ```
 
