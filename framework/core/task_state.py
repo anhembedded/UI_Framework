@@ -1,3 +1,5 @@
+from __future__ import annotations
+import json
 import copy
 import threading
 from dataclasses import dataclass, field
@@ -34,7 +36,7 @@ class TaskState:
         default_factory=threading.Lock, init=False, repr=False, compare=False
     )
 
-    def snapshot(self) -> "TaskState":
+    def snapshot(self) -> TaskState:
         """Return a thread-safe shallow copy (safe to read from any thread)."""
         with self._lock:
             return copy.copy(self)
@@ -54,3 +56,14 @@ class TaskState:
     def set_progress(self, value: int) -> None:
         with self._lock:
             self.progress = value
+    def __str__(self) -> str:   
+        with self._lock:
+            data = {
+                "id": self.id,
+                "status": str(self.status),
+            "progress": self.progress,
+            "result": str(self.result),
+            "error": self.error
+        }
+        return f"TaskState:{json.dumps(data)}"
+
