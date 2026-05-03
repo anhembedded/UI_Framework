@@ -269,7 +269,41 @@ sequenceDiagram
 
 ---
 
-## 5. Anti-Zombie / Self-Cleanup Mechanism
+## 5. Dynamic Window Creation (e.g., MDI / Sub-Views)
+
+When an application needs to spawn new panels or sub-windows dynamically (such as opening a Task Manager panel), the Main View and Main Presenter handle the instantiation of the sub-components.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant MainView
+    participant MainPresenter
+    participant SubView as TaskSubView
+    participant SubPresenter as TaskSubPresenter
+    participant Executor as QtTaskExecutor
+    
+    User->>MainView: Click "New Window" (Button A)
+    MainView->>MainPresenter: on_new_window_clicked()
+    
+    note over MainPresenter, SubPresenter: Create and Wire Sub-Components
+    MainPresenter->>SubView: Instantiate TaskSubView()
+    MainPresenter->>SubPresenter: Instantiate TaskSubPresenter(executor)
+    MainPresenter->>SubPresenter: sub_presenter.bind(sub_view)
+    MainPresenter->>MainView: view.add_sub_window(sub_view)
+    
+    note over User, SubView: Sub-window is now visible
+    User->>SubView: Click "Start Task" (Button B)
+    SubView->>SubPresenter: on_start_clicked()
+    
+    SubPresenter->>Executor: submit(DomainTask)
+    Executor-->>SubPresenter: Return TaskHandle
+    SubPresenter->>SubPresenter: _track(handle)
+```
+
+---
+
+## 6. Anti-Zombie / Self-Cleanup Mechanism
 
 One of the most critical issues in UI applications is when a User closes a window while a background Task is still running. The framework completely resolves this through the following mechanism:
 
@@ -300,7 +334,7 @@ stateDiagram-v2
 
 ---
 
-## 6. Guidelines for Developers & AI
+## 7. Guidelines for Developers & AI
 
 1.  **Test Location (`framework/tests`)**: Never write Unit Tests for GUI logic. Tests must strictly cover the Core, Executor, Context, and Base Presenter components within the `framework/tests` directory.
 2.  **View Inheritance**: Every View MUST inherit from `framework.ui.views.BaseQtView`. Do not inherit from `QWidget` directly.
