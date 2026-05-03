@@ -121,6 +121,7 @@ flowchart LR
 | `FrameworkContext.cli()` | `CLITaskExecutor` synchronous | Terminal scripts, headless testing |
 
 **Extension pattern:** To add a new runtime, add a classmethod:
+
 ```python
 @classmethod
 def ws(cls) -> "FrameworkContext":
@@ -144,6 +145,7 @@ flowchart TD
 ```
 
 `wire()` is a convenience method that combines what would otherwise be three separate calls:
+
 ```python
 # Manual equivalent of ctx.wire(view)
 presenter = factory.create(view, executor)
@@ -174,6 +176,7 @@ flowchart LR
 ```
 
 **Rules:**
+
 1. Create `FrameworkContext` **once** per application lifecycle, inside `App.run()`.
 2. **Never** instantiate `TaskExecutor`, `TaskRepository`, or `PresenterFactory` outside of `FrameworkContext`.
 3. `FrameworkContext` must be created **after** `QApplication` (Qt mode) since `QtTaskExecutor` uses `QThreadPool.globalInstance()` which requires an active `QApplication`.
