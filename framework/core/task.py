@@ -10,7 +10,7 @@ class AbstractTask(ABC):
     """
 
     @abstractmethod
-    def run(self, ctx : TaskContext) -> Any:
+    def run(self, ctx : TaskContext = None) -> Any:
         """Execute the task logic.
         
         Args:
