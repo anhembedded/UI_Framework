@@ -89,14 +89,14 @@ class QtTaskExecutor(TaskExecutor):
         self._repo = repo
 
     def submit(self, task: AbstractTask) -> QtTaskHandle:
-        ctx: QtTaskContext = QtTaskContext()
-        state: TaskState = TaskState(id=str(uuid.uuid4()), status=TaskStatus.PENDING)
+        task_context: QtTaskContext = QtTaskContext()
+        task_state: TaskState = TaskState(id=str(uuid.uuid4()), status=TaskStatus.PENDING)
 
         if self._repo:
-            self._repo.add(state)
+            self._repo.add(task_state)
 
-        runner = QtTaskRunner(task, ctx, state, repo=self._repo)
-        handle = QtTaskHandle(state, ctx)
+        runner = QtTaskRunner(task, task_context, task_state, repo=self._repo)
+        handle = QtTaskHandle(task_state, task_context)
 
         self.pool.start(runner)
         return handle

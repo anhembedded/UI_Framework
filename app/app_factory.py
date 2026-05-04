@@ -163,8 +163,8 @@ class QT_New_App(BaseApp):
     def run(self) -> None:
         from PySide6.QtWidgets import QApplication
         from framework.bootstrap import FrameworkContext
-        from app.new_demo_app.views.View_MainWindow import View_MainWindow
-        from app.new_demo_app.presenters.Presenter_MainWindow import Presenter_MainWindow
+        from app.Alk_Lazy_App.views.View_MainWindow import View_MainWindow
+        from app.Alk_Lazy_App.presenters.Presenter_MainWindow import Presenter_MainWindow
 
         app = QApplication(sys.argv)
         frameworkContext = FrameworkContext.qt()

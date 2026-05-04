@@ -41,27 +41,27 @@ class CLITaskExecutor(TaskExecutor):
         self._repo = repo
 
     def submit(self, task: AbstractTask) -> CLITaskHandle:
-        ctx: CLITaskContext = CLITaskContext()
-        state: TaskState = TaskState(id=str(uuid.uuid4()), status=TaskStatus.RUNNING)
+        task_context: CLITaskContext = CLITaskContext()
+        task_state: TaskState = TaskState(id=str(uuid.uuid4()), status=TaskStatus.RUNNING)
 
         if self._repo:
-            self._repo.add(state)
+            self._repo.add(task_state)
 
         try:
-            result = task.run(ctx)
-            if ctx.is_cancelled():
-                state.set_status(TaskStatus.CANCELLED)
+            result = task.run(task_context)
+            if task_context.is_cancelled():
+                task_state.set_status(TaskStatus.CANCELLED)
             else:
-                state.set_result(result)
-                state.set_status(TaskStatus.COMPLETED)
+                task_state.set_result(result)
+                task_state.set_status(TaskStatus.COMPLETED)
 
         except Exception as exc:
-            _logger.exception("Task %s raised an unhandled exception.", state.id)
-            state.set_error(str(exc))
-            state.set_status(TaskStatus.FAILED)
+            _logger.exception("Task %s raised an unhandled exception.", task_state.id)
+            task_state.set_error(str(exc))
+            task_state.set_status(TaskStatus.FAILED)
 
         finally:
             if self._repo:
-                self._repo.update(state)
+                self._repo.update(task_state)
 
-        return CLITaskHandle(state)
+        return CLITaskHandle(task_state)
